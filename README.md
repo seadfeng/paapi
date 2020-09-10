@@ -43,6 +43,7 @@ Configurable items:
  * partner_type
  * market
  * partner_market
+ * condition
  * test_mode
 
 Using the `partner_market` configuration item lets you set a hash of marketplaces and partner_tags.
