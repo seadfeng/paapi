@@ -103,7 +103,7 @@ module Paapi
     end
 
     def features
-      get(%w{ItemInfo Features DisplayValues})&.join(' ')
+      get(%w{ItemInfo Features DisplayValues})&.join("\r\n")
     end
 
     def brand
