@@ -4,15 +4,16 @@ require 'aws-sigv4'
 module Paapi
   class Client
 
-    attr_accessor :partner_tag, :marketplace, :resources, :condition
+    attr_accessor :partner_tag, :marketplace, :resources, :condition, :languages_of_preference
     attr_reader :partner_type, :access_key, :secret_key, :market
 
     def initialize(access_key:   Paapi.access_key,
                    secret_key:   Paapi.secret_key,
                    partner_tag:  Paapi.partner_tag,
+                   languages_of_preference: Paapi.languages_of_preference , 
                    market:       Paapi.market || DEFAULT_MARKET,
-                   condition:    Paapi.condition  || DEFAULT_CONDITION,
-                   resources:    Paapi.resources || DEFAULT_RESOURCES,
+                   condition:    Paapi.condition  || DEFAULT_CONDITION, 
+                   resources:    Paapi.resources || DEFAULT_RESOURCES, 
                    partner_type: DEFAULT_PARTNER_TYPE
                   )
       raise ArgumentError unless MARKETPLACES.keys.include?(market.to_sym)
@@ -21,9 +22,18 @@ module Paapi
       @secret_key = secret_key
       @partner_type = partner_type
       @resources = resources unless resources.nil?
-      @condition = condition  
+      @condition = condition   
       self.market = market
       @partner_tag = partner_tag if !partner_tag.nil?
+
+      if !languages_of_preference.nil? 
+        if languages_of_preference.is_a?(String) 
+         @languages_of_preference = [languages_of_preference]
+        else
+         @languages_of_preference = languages_of_preference 
+        end
+      end
+
     end
 
     def market=(a_market)
@@ -77,10 +87,11 @@ module Paapi
         'PartnerTag' => partner_tag,
         'PartnerType' => partner_type,
         'Marketplace' => marketplace.site
-      }
-
+      } 
       payload = default_payload.merge(payload)
+      payload = payload.merge({ 'LanguagesOfPreference' => languages_of_preference }) if languages_of_preference 
 
+      
       endpoint =  "https://#{marketplace.host}/paapi5/#{operation.endpoint_suffix}"
 
       signer = Aws::Sigv4::Signer.new(
