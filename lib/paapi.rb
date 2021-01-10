@@ -74,6 +74,7 @@ module Paapi
                   :market,
                   :partner_market,
                   :condition,
+                  :languages_of_preference,
                   :resources,
                   :test_mode
 
